@@ -25,7 +25,7 @@ ex = first.x + ((n - 0.5)*bsize)
 ey = first.y + ((n - 0.5)*bsize)
 
 #wait for 120 secs to click all 4 corners    
-time.sleep(120)
+time.sleep(1)
 
 #take a screen shot of the grid
 img = pg.screenshot(region=(sx,sy,ex-sx,ey-sy))
