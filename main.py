@@ -1,11 +1,16 @@
+import os  
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import pyautogui as pg
 import keyboard as kbd
 import time
+
 import numpy as np
-import cv2
+
+from tensorflow.keras.models import load_model
+
+from capture import scan
 
 bsize = 52.5
-fnamelen = 50
 
 #no of rows and columns, and tiles
 n = 9
@@ -13,11 +18,10 @@ tiles = n * n
 
 #list to hold status of all buttons
 buttons = []
-mat
 
 #class for buttons
 class button:
-    def __init__(self,x,y,status):
+    def __init__(self,x=0,y=0,status=0):
         self.size = bsize
         self.x = x
         self.y = y
@@ -25,7 +29,7 @@ class button:
 
 #class for the grid        
 class grid:
-    def __init__(self,row,col,startx,starty,endx,endy):
+    def __init__(self,row=0,col=0,startx=0,starty=0,endx=0,endy=0):
         self.row = row
         self.col = col
         self.startx = startx
@@ -34,10 +38,14 @@ class grid:
         self.endy = endy
         self.w = endx - startx
         self.h = endy - starty
-        
+
+mat = grid()
+temp = []
+
 def initialize():
     global buttons
     global mat
+    global temp
     
     first = pg.locateCenterOnScreen('tab.png')
     
@@ -54,12 +62,16 @@ def initialize():
         for j in range(n):
             b = button(first.x + (j*bsize),first.y + (i*bsize),0)
             buttons.append(b)
-    i = 0
+            
     for b in buttons:
         pg.click(b.x,b.y)
-        time.sleep(0.5)
+        temp = scan(n, mat.startx, mat.starty, mat.endx, mat.endy, 8)
         
         if kbd.is_pressed('s'):
             break
                 
 initialize()
+
+#%%
+
+print(np.matrix(temp))
