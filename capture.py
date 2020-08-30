@@ -4,6 +4,11 @@ import pyautogui as pg
 from PIL import Image
 from tensorflow.keras.models import load_model
 import numpy as np
+import time
+import matplotlib.pyplot as plt
+import cv2
+import secrets
+import string
 
 def scan(n, sx, sy, ex, ey, off):
     tiles = []
@@ -13,6 +18,7 @@ def scan(n, sx, sy, ex, ey, off):
     
     #take a screen shot of the grid
     img = pg.screenshot(region=(sx,sy,ex-sx,ey-sy))
+    img.show()
     img = np.asarray(img)
         
     ih = img.shape[0]
@@ -28,14 +34,16 @@ def scan(n, sx, sy, ex, ey, off):
             #select the current tile from the whole image
             cur = img[i*ih + off:(i+1)*ih - off,j*iw + off:(j+1)*iw - off]
             
-            """
+    
             #path to save tile image
-            res = ''.join(secrets.choice(string.ascii_letters + string.digits) for i in range(fnamelen)) 
-            path = r"./img/" + str(res) + ".png"
-            """
+            res = ''.join(secrets.choice(string.ascii_letters + string.digits) for i in range(10)) 
+            path = r"./tempimg/" + str(res) + ".png"
             
             #convert this snap of a tile into an image and save it
-            cur = Image.fromarray(cur).convert('RGB')
+            cur = cv2.cvtColor(cur, cv2.COLOR_BGR2RGB)
+            cv2.imwrite(path, cur)
+            cur = cv2.imread(path)
+            
             cur = np.asarray(cur)
             
             #scanning the tile image by using the CNN model
@@ -44,8 +52,10 @@ def scan(n, sx, sy, ex, ey, off):
             
             #adding to the current row of tiles
             curtiles.append(num[0][0])
-        
+            
+            #remove image after use
+            os.remove(path)
         tiles.append(curtiles)
-
+    
     return tiles
         
