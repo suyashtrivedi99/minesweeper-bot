@@ -9,6 +9,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 
 from capture import scan
+import matplotlib.pyplot as plt
 
 bsize = 52.5
 
@@ -65,11 +66,12 @@ def initialize():
             
     for b in buttons:
         pg.click(b.x,b.y)
-        temp = scan(n, mat.startx, mat.starty, mat.endx, mat.endy, 8)
         
         if kbd.is_pressed('s'):
             break
-                
+   
+    temp = scan(n, mat.startx, mat.starty, mat.endx, mat.endy, 8)
+             
 initialize()
 
 #%%
