@@ -18,7 +18,6 @@ def scan(n, sx, sy, ex, ey, off):
     
     #take a screen shot of the grid
     img = pg.screenshot(region=(sx,sy,ex-sx,ey-sy))
-    img.show()
     img = np.asarray(img)
         
     ih = img.shape[0]

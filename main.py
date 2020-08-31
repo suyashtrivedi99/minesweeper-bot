@@ -10,6 +10,7 @@ from tensorflow.keras.models import load_model
 
 from capture import scan
 import matplotlib.pyplot as plt
+import random
 
 bsize = 52.5
 
@@ -94,10 +95,11 @@ def check_run():
     global buttons
     global mat
     
-    for button in buttons:
-        #bomb detection
-        if button.status == 11:
-            return False
+    for curbuttons in buttons:
+        for b in curbuttons:
+            #bomb detection
+            if b.status == 11:
+                return False
     return True     
 
 #solve
@@ -105,6 +107,8 @@ def solve():
     global buttons
     global mat
     global n
+    
+    left_clicks_num = 0
     
     for i in range(n):
         for j in range(n):
@@ -198,18 +202,34 @@ def solve():
                 clickside = ""
                 
                 #if only the bombs remain unmarked
-                if curs - len(flag) == risk:
-                    clickside = "right"
+                if curs - len(flag) == len(risk):
+                    for coord in risk:
+                        clickcoord = (buttons[coord[0]][coord[1]].x, buttons[coord[0]][coord[1]].y)    
+                        pg.click(x=clickcoord[0],y=clickcoord[1],button="right")
+                        buttons[coord[0]][coord[1]].status = 10
                     
                 #if all the bombs have already been marked    
                 elif curs == len(flag):
-                    clickside = "left"
-                
-                for coord in risk:
-                    clickcoord = (buttons[coord[0]][coord[1]].x, buttons[coord[0]][coord[1]].y)    
-                    pg.click(x=clickcoord[0],y=clickcoord[1],button=clickside)
-                        
-
+                    for coord in risk:
+                        clickcoord = (buttons[coord[0]][coord[1]].x, buttons[coord[0]][coord[1]].y)    
+                        pg.click(x=clickcoord[0],y=clickcoord[1],button="left")
+                        #temporary fix
+                        buttons[coord[0]][coord[1]].status = 0
+                        left_clicks_num += 1
+    
+    #if no tile uncovered, uncover random tile (luck factor)
+    if left_clicks_num == 0:
+        
+        blue_tiles = []
+        
+        for i in range(n):
+            for j in range(n):
+                if(buttons[i][j].status == 9):
+                    blue_tiles.append(buttons[i][j])
+        
+        rndb = random.choice(blue_tiles)
+        pg.click(rndb.x,rndb.y)
+        
 #start execution 
 initialize()
 
